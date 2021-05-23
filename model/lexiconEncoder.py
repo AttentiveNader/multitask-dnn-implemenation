@@ -9,29 +9,34 @@ PE(pos,2i+1) =  cos(pos/10000.exp(2i/d_model))
 """
 """
 todo 
-figure out how the positional encoding works ??!! XD
-use vmap on the div_term
-check the shape broadcasting 
+token_type_embeddings
 
 """
 
 
 class PositionalEncoder(nn.Module):
-
     def __init__(self,d_model:int,max_len:int=512):
         super().__init__()
         pe = torch.zeros((max_len,d_model)).float()
-        div_term = torch.arange(0,d_model).unsqueeze(0).float()
-        pos = torch.arange(0,max_len).unsqueeze(1).float()
 
-        self.register_buffer()
+        div_term = torch.pow(10000,2*(torch.arange(0,d_model)//2)/d_model).unsqueeze(0).float()
+        pos = torch.arange(0,max_len).unsqueeze(1).float()
+        pe[:,0::2] = torch.sin((pos/div_term)[:,0::2])
+        pe[:,1::2] = torch.cos((pos/div_term)[:,1::2])
+
+        self.register_buffer('pe',pe)
+
+    def forward(self,x:torch.Tensor):
+        return x + self.pe[:,:x.size(1)]
+
 
 
 
 class LexiconEncoder(nn.Module):
 
-    def __init__(self, maxSeqLength: int, vocab_size: int=20):
+    def __init__(self,d_model:int, max_seq_length: int, vocab_size: int=20):
         super().__init__()
+        self.positional_encoder = PositionalEncoder(d_model,max_seq_length)
 
 
 
