@@ -7,11 +7,6 @@ the positionalEncoder formula can be found in the Attention is all you need pape
 PE(pos,2i)   =  sin(pos/10000.exp(2i/d_model))
 PE(pos,2i+1) =  cos(pos/10000.exp(2i/d_model))
 """
-"""
-todo 
-token_type_embeddings
-
-"""
 
 
 class PositionalEncoder(nn.Module):
@@ -24,19 +19,30 @@ class PositionalEncoder(nn.Module):
         pe[:,0::2] = torch.sin((pos/div_term)[:,0::2])
         pe[:,1::2] = torch.cos((pos/div_term)[:,1::2])
 
-        self.register_buffer('pe',pe)
+        self.register_buffer('pe',pe.unsqueeze(0))
 
-    def forward(self,x:torch.Tensor):
-        return x + self.pe[:,:x.size(1)]
-
-
+    def forward(self,x:torch.Tensor)->torch.Tensor:
+        return self.pe[:,:x.size[1]].clone().detach()
 
 
 class LexiconEncoder(nn.Module):
 
-    def __init__(self,d_model:int, max_seq_length: int, vocab_size: int=20):
+    def __init__(self,d_model:int, vocab_size:int, max_seq_length: int=512):
         super().__init__()
-        self.positional_encoder = PositionalEncoder(d_model,max_seq_length)
+        self.positionalEncoder = PositionalEncoder(d_model,max_seq_length)
+        self.segmentEmbedding = nn.Embedding(2,d_model)
+        self.tokenEmbeddings = nn.Embedding(vocab_size,d_model)
+
+    def forward(self,x,token_types)->torch.Tensor:
+        x = self.tokenEmbeddings(x)
+        x = x + self.positionalEncoder(x)
+        x = x + self.segmentEmbedding(token_types)
+
+        return x
+
+
+
+
 
 
 

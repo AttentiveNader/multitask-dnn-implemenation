@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/myMultiTaskNN.iml" filepath="$PROJECT_DIR$/.idea/myMultiTaskNN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/myMultiTaskDNN.iml" filepath="$PROJECT_DIR$/.idea/myMultiTaskDNN.iml" />
     </modules>
   </component>
 </project>

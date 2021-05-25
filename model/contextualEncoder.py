@@ -1,0 +1,20 @@
+from torch import nn
+import torch
+
+# todo
+"""
+write the transformerEncoder implementation  and replace the the pytorch one 
+
+"""
+
+
+class TransformerEncoder(nn.Module):
+
+    def __int__(self,d_model:int,n_heads:int,n_layers:int,implementation:str):
+        assert  d_model % n_heads == 0
+        encoderLayer = nn.TransformerEncoderLayer(d_model,n_heads)
+        self.contextualEncoder = nn.TransformerEncoder(encoderLayer,n_layers)
+
+    def forward(self,x,padding_mask)->torch.Tensor:
+
+        return self.contextualEncoder(x,padding_mask)
